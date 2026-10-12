@@ -1,0 +1,92 @@
+<Window x:Class="ValorantTuner.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Valorant Tuner" Height="780" Width="1240" MinWidth="980" MinHeight="600"
+        Background="#0E1117" Foreground="#E6EDF3" FontFamily="Segoe UI">
+  <Window.Resources>
+    <BooleanToVisibilityConverter x:Key="B2V"/>
+    <Style x:Key="Card" TargetType="Border">
+      <Setter Property="Background" Value="{StaticResource Panel}"/>
+      <Setter Property="BorderBrush" Value="{StaticResource Muted}"/>
+      <Setter Property="BorderThickness" Value="4,0,0,0"/>
+      <Setter Property="CornerRadius" Value="6"/>
+      <Setter Property="Padding" Value="16,12"/>
+      <Setter Property="Margin" Value="0,0,0,10"/>
+      <Style.Triggers>
+        <DataTrigger Binding="{Binding Level}" Value="Critical"><Setter Property="BorderBrush" Value="{StaticResource Red}"/></DataTrigger>
+        <DataTrigger Binding="{Binding Level}" Value="Warning"><Setter Property="BorderBrush" Value="{StaticResource Amber}"/></DataTrigger>
+        <DataTrigger Binding="{Binding Level}" Value="Ok"><Setter Property="BorderBrush" Value="{StaticResource Green}"/></DataTrigger>
+        <DataTrigger Binding="{Binding Level}" Value="Info"><Setter Property="BorderBrush" Value="{StaticResource Blue}"/></DataTrigger>
+      </Style.Triggers>
+    </Style>
+    <Style x:Key="Tile" TargetType="Border">
+      <Setter Property="Background" Value="{StaticResource Panel}"/>
+      <Setter Property="CornerRadius" Value="6"/>
+      <Setter Property="Padding" Value="14,8"/>
+      <Setter Property="Margin" Value="0,0,10,0"/>
+      <Setter Property="MinWidth" Value="120"/>
+    </Style>
+  </Window.Resources>
+  <Grid>
+    <Grid.ColumnDefinitions><ColumnDefinition Width="220"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+
+    <Border Background="#0A0D12" BorderBrush="{StaticResource Edge}" BorderThickness="0,0,1,0">
+      <DockPanel>
+        <StackPanel DockPanel.Dock="Top" Margin="20,22,20,18">
+          <TextBlock Text="VALORANT" FontSize="22" FontWeight="Black" Foreground="{StaticResource Red}"/>
+          <TextBlock Text="PERFORMANCE TUNER" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource Blue}"/>
+        </StackPanel>
+        <ListBox ItemsSource="{Binding Pages}" SelectedItem="{Binding Current}" Background="Transparent" BorderThickness="0" Foreground="#E6EDF3">
+          <ListBox.ItemTemplate><DataTemplate>
+            <TextBlock Text="{Binding Title}" FontSize="14" Padding="10,7"/>
+          </DataTemplate></ListBox.ItemTemplate>
+        </ListBox>
+      </DockPanel>
+    </Border>
+
+    <DockPanel Grid.Column="1" Margin="24,18,24,14">
+      <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,14">
+        <Border Style="{StaticResource Tile}"><StackPanel><TextBlock Text="CPU" Foreground="{StaticResource Muted}" FontSize="11"/><TextBlock Text="{Binding CpuText}" FontSize="20" FontWeight="Bold"/></StackPanel></Border>
+        <Border Style="{StaticResource Tile}"><StackPanel><TextBlock Text="GPU" Foreground="{StaticResource Muted}" FontSize="11"/><TextBlock Text="{Binding GpuText}" FontSize="20" FontWeight="Bold"/></StackPanel></Border>
+        <Border Style="{StaticResource Tile}"><StackPanel><TextBlock Text="GPU TEMP" Foreground="{StaticResource Muted}" FontSize="11"/><TextBlock Text="{Binding GpuTempText}" FontSize="20" FontWeight="Bold"/></StackPanel></Border>
+        <Border Style="{StaticResource Tile}"><StackPanel><TextBlock Text="RAM FREE" Foreground="{StaticResource Muted}" FontSize="11"/><TextBlock Text="{Binding RamText}" FontSize="20" FontWeight="Bold"/></StackPanel></Border>
+        <Border Style="{StaticResource Tile}"><StackPanel><TextBlock Text="HEALTH SCORE" Foreground="{StaticResource Muted}" FontSize="11"/><TextBlock Text="{Binding ScoreText}" FontSize="20" FontWeight="Bold" Foreground="{StaticResource Blue}"/></StackPanel></Border>
+      </StackPanel>
+
+      <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,14">
+        <Button Style="{StaticResource Accent}" Content="Auto Scan" Command="{Binding ScanCommand}" ToolTip="Collects system info, samples load for 8 s and runs a network test."/>
+        <Button Style="{StaticResource Blue}" Content="Optimize Valorant" Command="{Binding OptimizeCommand}" ToolTip="Applies only Safe, reversible tweaks after you confirm. Backs up first."/>
+        <Button Content="Restore Defaults" Command="{Binding RestoreCommand}" ToolTip="Undoes every change this app has made, in reverse order."/>
+        <Button Content="Export Report" Command="{Binding ExportCommand}" ToolTip="Saves an HTML report (open it and Print to PDF if you need a PDF)."/>
+      </StackPanel>
+
+      <StackPanel DockPanel.Dock="Bottom" Margin="0,8,0,0">
+        <ProgressBar IsIndeterminate="{Binding IsBusy}" Height="3" Background="Transparent" BorderThickness="0" Foreground="{StaticResource Red}"/>
+        <TextBlock Text="{Binding Status}" Foreground="{StaticResource Muted}" FontSize="12" Margin="0,6,0,0" TextWrapping="Wrap"/>
+      </StackPanel>
+
+      <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel>
+          <TextBlock Text="{Binding Current.Title}" FontSize="24" FontWeight="Bold"/>
+          <TextBlock Text="{Binding Current.Description}" Foreground="{StaticResource Muted}" Margin="0,2,0,14" TextWrapping="Wrap"/>
+          <ItemsControl ItemsSource="{Binding Current.Findings}">
+            <ItemsControl.ItemTemplate><DataTemplate>
+              <Border Style="{StaticResource Card}">
+                <Grid>
+                  <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                  <StackPanel>
+                    <TextBlock Text="{Binding Title}" FontSize="15" FontWeight="SemiBold" TextWrapping="Wrap"/>
+                    <TextBlock Text="{Binding Detail}" Margin="0,4,0,0" TextWrapping="Wrap" Foreground="#C9D4E5"/>
+                    <TextBlock Text="{Binding Evidence}" Margin="0,6,0,0" TextWrapping="Wrap" FontFamily="Consolas" FontSize="12" Foreground="{StaticResource Muted}"/>
+                  </StackPanel>
+                  <Button Grid.Column="1" Style="{StaticResource Blue}" Content="{Binding FixLabel}" Command="{Binding FixCommand}"
+                          Visibility="{Binding HasFix, Converter={StaticResource B2V}}" VerticalAlignment="Center" Margin="12,0,0,0"/>
+                </Grid>
+              </Border>
+            </DataTemplate></ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </StackPanel>
+      </ScrollViewer>
+    </DockPanel>
+  </Grid>
+</Window>
