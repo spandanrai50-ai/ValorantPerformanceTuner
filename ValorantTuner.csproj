@@ -9,8 +9,5 @@
     <RootNamespace>ValorantTuner</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="System.Management" Version="8.0.0" />
-    <PackageReference Include="System.Diagnostics.PerformanceCounter" Version="8.0.0" />
-  </ItemGroup>
 </Project>
+

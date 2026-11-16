@@ -1,15 +1,20 @@
 using System.Windows;
-using ValorantTuner.Services;
+
 namespace ValorantTuner;
+
 public partial class App : Application
 {
     public App()
     {
-        DispatcherUnhandledException += (_, e) =>
+        DispatcherUnhandledException += (_, args) =>
         {
-            Logger.Error("Unhandled UI exception", e.Exception);
-            MessageBox.Show(e.Exception.Message, "Valorant Tuner", MessageBoxButton.OK, MessageBoxImage.Error);
-            e.Handled = true;
+            MessageBox.Show(
+                "An unexpected error occurred. No system settings were changed.\n\n" + args.Exception.Message,
+                "Valorant Tuner",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+            args.Handled = true;
         };
     }
 }
+

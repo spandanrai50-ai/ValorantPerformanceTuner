@@ -1,32 +1,31 @@
-# Valorant Tuner (WPF / .NET 8)
+# Valorant Tuner
 
-Measurement-driven Valorant tuning for Windows 11. No fake optimizations: every card is backed by WMI,
-performance counters, nvidia-smi, netsh, powercfg, registry reads or live ping tests, and shows its evidence.
+A safe, read-only Windows 10/11 readiness scanner for VALORANT. It helps you create a baseline before playing without touching game memory, Vanguard, drivers or hidden registry tweaks.
 
-## Build
-1. Install **.NET 8 SDK** (and Visual Studio 2022 with ".NET desktop development", optional).
-2. `cd ValorantTuner && dotnet restore && dotnet build -c Release`
-3. Run `bin\Release\net8.0-windows\ValorantTuner.exe` (it asks for Administrator: needed for powercfg, HKLM, restore points).
-4. Single-file publish: `dotnet publish -c Release -r win-x64 --self-contained false -p:PublishSingleFile=true`
+## What it checks
 
-## Use
-- **Auto Scan**: system info + 8 s load sampling + process interference + network test. Scan *while Valorant is running* for bottleneck detection.
-- **Optimize Valorant**: applies only Safe tweaks (GPU pinned to RTX, Game Mode, Game Bar capture off, mouse acceleration off) after approval. Backup + restore point first.
-- **Restore Defaults**: undoes every change using the journal (`%AppData%\ValorantTuner\journal.json`) with exact previous values.
-- **Export Report**: HTML in Documents\ValorantTuner (open it and Print > Save as PDF).
-- Logs: `%AppData%\ValorantTuner\logs`. Registry backups: `%AppData%\ValorantTuner\backups`.
+- CPU identification and available system memory
+- VALORANT process presence (read only)
+- Optional NVIDIA GPU telemetry from `nvidia-smi`—GPU name, driver, temperature, usage and VRAM
+- Windows Game Mode and mouse-acceleration registry values
+- Active Windows power plan
+- An exportable HTML report saved under `Documents\ValorantTuner\Reports`
 
-## Architecture
-`Core` (MVVM base) / `Models` / `Services` (WMI, counters, nvidia-smi, shell, journal, backup, report) /
-`Modules` (analyzers + TweakCatalog) / `ViewModels` / XAML views.
+It does **not** inject, hook, scan or modify VALORANT; alter Vanguard; change NVIDIA settings; or apply automatic Windows tweaks.
 
-## Deliberately NOT included (and why)
-- Registry TCP/network "tweaks": your measurements showed the added latency is in the ISP route, not Windows.
-- NVIDIA Profile Inspector flags, AMD Memory Optimiser "Gaming", disabling the iGPU: froze or destabilised your laptop earlier.
-- CPU temperature: no reliable supported Windows API; the app says so instead of faking a number.
+## Build and run
 
-## Roadmap
-DOCX/PDF export, before/after PresentMon benchmark import, per-adapter Wi-Fi property editing with backup,
-charts (live history), scheduled scans.
+1. Install the [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0) and Visual Studio's **.NET desktop development** workload (optional but convenient).
+2. Run `dotnet build -c Release`.
+3. Run `bin\Release\net8.0-windows\ValorantTuner.exe`.
 
-> Status: written without access to a Windows build machine. Expect to fix a few compile warnings on first build.
+No administrator rights are required.
+
+## NVIDIA support
+
+When the NVIDIA driver exposes `nvidia-smi`, the app displays real driver and GPU telemetry. If it is not available, the app stays functional and explains that no NVIDIA reading was returned. It never changes driver settings.
+
+## Limitations
+
+The readiness score is a transparent heuristic, not an FPS benchmark. GPU temperature and utilization are a snapshot at scan time. For meaningful comparisons, scan under similar conditions.
+
